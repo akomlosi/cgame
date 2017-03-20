@@ -1,6 +1,5 @@
 module.exports = {
-	//entry  : './es6/input.js',
-	entry  : './es6/index.ts',
+	entry  : './ts/index.ts',
 	output : {
 		path     : './dist/',
 		filename : 'output.js'
