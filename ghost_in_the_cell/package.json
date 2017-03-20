@@ -1,0 +1,19 @@
+{
+  "name": "Gohst",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --watch",
+    "build-ts": "webpack"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^6.23.1",
+    "babel-loader": "^6.3.2",
+    "ts-loader": "^2.0.2",
+    "typescript": "^2.2.1",
+    "webpack": "^2.2.1"
+  }
+}
