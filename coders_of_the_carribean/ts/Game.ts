@@ -1,6 +1,6 @@
 declare function printErr(command:any):any;
 
-import {Grid, AStarFinder} from "pathfinding";
+//import {Grid, AStarFinder} from "pathfinding";
 
 import Ship from "./Ship";
 import Barrel from "./Barrel";
@@ -22,13 +22,13 @@ export default class Game {
 	//		mines:Array<Mine>
 	//	},
 	//};
-	private _grid;
-	private _finder;
-	private _paths;
+	//private _grid;
+	//private _finder;
+	//private _paths;
 
 	constructor() {
-		this._isMineAllowed = true;
-		this._paths = [];
+		//this._isMineAllowed = true;
+		//this._paths = [];
 
 		this._turn = {};
 
@@ -39,15 +39,15 @@ export default class Game {
 			cannonBalls: []
 		};
 
-		this._grid = new Grid(23, 21);
-		this._finder = new AStarFinder({
-			allowDiagonal: true,
-			//dontCrossCorners: false
-		});
+		//this._grid = new Grid(23, 21);
+		//this._finder = new AStarFinder({
+		//	allowDiagonal: true,
+		//	//dontCrossCorners: false
+		//});
 	}
 
 	update(round) {
-		this._paths = [];
+		//this._paths = [];
 		this._round = round;
 		this._turn[round] = {
 			ships: [],
@@ -82,7 +82,7 @@ export default class Game {
 	}
 
 	set addMine(mine:Mine) {
-		this._grid.setWalkableAt(mine.pos.x, mine.pos.y, false);
+		//this._grid.setWalkableAt(mine.pos.x, mine.pos.y, false);
 		this.turn.mines.push(mine);
 	}
 
@@ -98,59 +98,65 @@ export default class Game {
 			return ship.owner == 0;
 		});
 
-		//let i = shipIndex + 1
-
-		//if (i == this.turn.ships.length/2) {
-		//	let interceptor = myship[shipIndex];
-		//	let dist = Simulator.countDistance(interceptor, Simulator.getClosestShip(interceptor, enemyShip));
-		//	if (dist < 10) {
-		//		let predictedPosition =
-		//			Simulator.predictShipPosition(enemyShip[shipIndex], dist);
-		//		return 'FIRE ' + predictedPosition.x + ' ' + predictedPosition.y;
-		//	}
-		//	return 'MOVE ' + enemyShip[shipIndex].pos.x + ' ' + enemyShip[shipIndex].pos.y;
+		//for (let i = 0; i < this.turn.barrels.length; i++) {
+		//	var gridBackup = this._grid.clone();
+		//	let p = this._finder.findPath(myship[shipIndex].pos.x, myship[shipIndex].pos.y, this.turn.barrels[i].pos.x, this.turn.barrels[i].pos.y, gridBackup);
+		//	this._paths.push(p);
 		//}
 
-		for (let i = 0; i < this.turn.barrels.length; i++) {
-			var gridBackup = this._grid.clone();
-			let p = this._finder.findPath(myship[shipIndex].pos.x, myship[shipIndex].pos.y, this.turn.barrels[i].pos.x, this.turn.barrels[i].pos.y, gridBackup);
-			this._paths.push(p);
+		let myShip = myship[shipIndex];
+		let target = Simulator.getClosestShip(myship[shipIndex], enemyShip);
+
+		//this._paths.sort((a, b)=> {
+		//	return a.length > b.length;
+		//});
+
+
+		for (let c = 0; c < this.turn.cannonBalls.length; c++) {
+			if (this.turn.cannonBalls[c].targetPos.x == myship[shipIndex].pos.x &&
+				this.turn.cannonBalls[c].targetPos.y == myship[shipIndex].pos.y) {
+				printErr('GEBASZ!!!!')
+				if (this._round % 2 == 0) {
+					return 'FASTER';
+				}
+				let pos = Simulator.getEscapeFromCannonBall(this.turn.cannonBalls[c]);
+				return 'MOVE ' + pos.x + ' ' + pos.y;
+			}
 		}
 
-		this._paths.sort((a, b)=> {
-			return a.length > b.length;
-		});
-
-		//for (let c = 0; c < this.turn.cannonBalls.length; c++) {
-		//	if (this.turn.cannonBalls[c].targetPos.x == myship[shipIndex].pos.x &&
-		//		this.turn.cannonBalls[c].targetPos.y == myship[shipIndex].pos.y) {
-		//		printErr('GEBASZ!!!!')
-		//	}
-		//}
-
-		if (this._round % 2 == 0 && enemyShip[shipIndex]) {
-			let dist = Simulator.countDistance(myship[shipIndex], enemyShip[shipIndex]);
-			//if (dist < 10) {
-			let predictedPosition =
-				Simulator.predictShipPosition(enemyShip[shipIndex], dist);
-			return 'FIRE ' + predictedPosition.x + ' ' + predictedPosition.y;
-			//}
+		if (this._round % 2 == 0 && target) {
+			let dist = Simulator.getPredictedDistance(myShip, target);
+			printErr('Fire DIST: ' + dist);
+			if (dist < 10) {
+				let predictedPosition =
+					Simulator.predictShipPosition(target, dist);
+				return 'FIRE ' + Math.abs(predictedPosition.x) + ' ' + Math.abs(predictedPosition.y);
+			}
 			//return 'MINE';
 		}
 
-		let ran = Math.random();
-		if (this._paths[shipIndex] && enemyShip[shipIndex]) {
-			if (myship[shipIndex].speed === 0) {
-				return 'MOVE ' + enemyShip[shipIndex].pos.x + ' ' + enemyShip[shipIndex].pos.y;
-			}
-			let z = this._paths[shipIndex].length - 1;
-			let p = this._paths[shipIndex][z][0] + ' ' + this._paths[shipIndex][z][1];
-			this._paths.splice(shipIndex, 1);
-			return 'MOVE ' + p;
+		if (this.turn.barrels.length) {
+			let barrel = Simulator.getClosestBarrel(myShip, this.turn.barrels);
+			return 'MOVE ' + barrel.pos.x + ' ' + barrel.pos.y;
 		}
-		if (enemyShip[shipIndex]) {
-			return 'FIRE ' + enemyShip[shipIndex].pos.x + ' ' + enemyShip[shipIndex].pos.y;
+
+		//if (this._paths[shipIndex]) {
+		//	if (myShip.speed === 0) {
+		//		return 'MOVE ' + target.pos.x + ' ' + target.pos.y;
+		//	}
+		//	let z = this._paths[shipIndex].length - 1;
+		//	let p = this._paths[shipIndex][z][0] + ' ' + this._paths[shipIndex][z][1];
+		//	this._paths.splice(shipIndex, 1);
+		//	return 'MOVE ' + p;
+		//}
+		if (target) {
+			return 'FIRE ' + target.pos.x + ' ' + target.pos.y;
 		}
-		return 'FIRE ' + enemyShip[0].pos.x + ' ' + enemyShip[0].pos.y;
+		if (this._round % 2 !== 0) {
+			let escapeTo = Simulator.getEscapeCoordinates(target);
+			printErr('ESCAPE')
+			return 'MOVE ' + escapeTo.x + ' ' + escapeTo.y;
+		}
+		//return 'FIRE ' + target.pos.x + ' ' + target.pos.y;
 	}
 }
