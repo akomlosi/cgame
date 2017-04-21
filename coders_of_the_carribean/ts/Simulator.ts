@@ -21,6 +21,10 @@ const Simulator = {
 		}
 	},
 
+    getPredictedDistance(ship1:Ship, ship2:Ship) {
+        return Math.round(1 + (Simulator.countDistance(ship1, ship2) / 3));
+    },
+
 	// countDistance(ship1:Ship, ship2:Ship) {
 	// 	let d = Math.floor((Math.abs(ship1.pos.x - ship2.pos.x) + Math.abs(ship1.pos.y - ship2.pos.y)) / 2);
 	// 	printErr('DISTANCE: '+d)
