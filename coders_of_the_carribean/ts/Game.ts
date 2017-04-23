@@ -118,9 +118,11 @@ export default class Game {
 				printErr('GEBASZ!!!!')
 				if (this._round % 2 == 0) {
 					return 'FASTER';
+				} else {
+					return 'PORT';
 				}
-				let pos = Simulator.getEscapeFromCannonBall(this.turn.cannonBalls[c]);
-				return 'MOVE ' + pos.x + ' ' + pos.y;
+				//let pos = Simulator.getEscapeFromCannonBall(this.turn.cannonBalls[c]);
+				//return 'MOVE ' + pos.x + ' ' + pos.y;
 			}
 		}
 
@@ -131,6 +133,9 @@ export default class Game {
 				let predictedPosition =
 					Simulator.predictShipPosition(target, dist);
 				return 'FIRE ' + Math.abs(predictedPosition.x) + ' ' + Math.abs(predictedPosition.y);
+			}
+			else {
+				return 'FASTER'
 			}
 			//return 'MINE';
 		}
@@ -149,9 +154,9 @@ export default class Game {
 		//	this._paths.splice(shipIndex, 1);
 		//	return 'MOVE ' + p;
 		//}
-		if (target) {
-			return 'FIRE ' + target.pos.x + ' ' + target.pos.y;
-		}
+		//if (target) {
+		//	return 'FIRE ' + target.pos.x + ' ' + target.pos.y;
+		//}
 		if (this._round % 2 !== 0) {
 			let escapeTo = Simulator.getEscapeCoordinates(target);
 			printErr('ESCAPE')

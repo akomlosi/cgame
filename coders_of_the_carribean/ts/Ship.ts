@@ -18,6 +18,10 @@ export default class Ship {
 		this._y = y;
 	}
 
+	get id() {
+		return this._id;
+	}
+
 	get owner() {
 		return this._owner;
 	}

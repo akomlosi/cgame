@@ -1,5 +1,7 @@
+import CannonBall from "./CannonBall";
 declare function printErr(command:any):any;
 import Ship from "./Ship";
+import Barrel from "./Barrel";
 const Simulator = {
 	predictShipPosition(ship:Ship, future:number) {
         if (ship.speed == 0) {
@@ -31,17 +33,17 @@ const Simulator = {
 	// 	return d;
 	// },
 
-	countDistance(ship1:Ship, ship2:Ship) {
-        if (ship1.pos.x == ship2.pos.x) {
-            return Math.abs(ship2.pos.y - ship1.pos.y);
+	countDistance(a, b) {
+        if (a.pos.x == b.pos.x) {
+            return Math.abs(b.pos.y - a.pos.y);
         }
-        else if (ship1.pos.y == ship2.pos.y) {
-            return Math.abs(ship2.pos.x - ship1.pos.x);
+        else if (a.pos.y == b.pos.y) {
+            return Math.abs(b.pos.x - a.pos.x);
         }
         else {
-            var dx = Math.abs(ship2.pos.x - ship1.pos.x);
-            var dy = Math.abs(ship2.pos.y - ship1.pos.y);
-            if (ship1.pos.y < ship2.pos.y) {
+            var dx = Math.abs(b.pos.x - a.pos.x);
+            var dy = Math.abs(b.pos.y - a.pos.y);
+            if (a.pos.y < b.pos.y) {
                 return dx + dy - Math.ceil(dx / 2);
             }
             else {
@@ -62,12 +64,32 @@ const Simulator = {
 		return closest;
 	},
 
-    getEscapeCoordinates(ship) {
+	getClosestBarrel(ship:Ship, barrels:Array<Barrel>) {
+		let closest = null, dist = 1000, d2;
+		for (let i = 0; i < barrels.length; i++) {
+			d2 = Simulator.countDistance(ship, barrels[i]);
+			if (d2 < dist) {
+				dist = d2;
+				closest = barrels[i];
+			}
+		}
+		return closest;
+	},
+
+    getEscapeCoordinates(ship:Ship) {
         let x = ship.pos.x;
         let y = ship.pos.y;
         let escapeX = x - 8 <= 0 ? x + 8 : x - 8;
         let escapeY = y - 8 <= 0 ? y + 8 : y - 8;
         return {x : escapeX, y : escapeY};
-    }
+    },
+
+	getEscapeFromCannonBall(cball:CannonBall) {
+		let x = cball.targetPos.x;
+		let y = cball.targetPos.y;
+		let escapeX = x - 8 <= 0 ? x + 8 : x - 8;
+		let escapeY = y - 8 <= 0 ? y + 8 : y - 8;
+		return {x : escapeX, y : escapeY};
+	}
 };
 export default Simulator;
