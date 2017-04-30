@@ -30,4 +30,11 @@ export default class Troop {
 	get turns(): number {
 		return this._turns;
 	}
+	get fitness(): number {
+		let strength: number = 1 / (this._target.cyborgs - this._cyborgs) + 1;
+		return (1 / this._turns) + strength;
+	}
+	decreaseTurns() {
+		this._turns = this._turns - 1;
+	}
 }

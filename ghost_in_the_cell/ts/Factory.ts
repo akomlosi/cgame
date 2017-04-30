@@ -1,10 +1,12 @@
 declare function printErr(command:any):any;
+
 export default class Factory {
 	private _id: string;
 	private _owner: number;
 	private _cyborgs: number;
 	private _produces: number;
 	private _fitness: number;
+	private _threat: number;
 
 	constructor(id, owner, cyborgs, produces) {
 		this._id = id;
@@ -12,6 +14,7 @@ export default class Factory {
 		this._cyborgs = cyborgs;
 		this._produces = produces;
 		this._fitness = ((produces * cyborgs) * 0.5) + 1;
+		this._threat = 0;
 	}
 
 	get id(): string {
@@ -19,6 +22,9 @@ export default class Factory {
 	}
 	get owner(): number {
 		return this._owner;
+	}
+	set updateOwner(owner: number) {
+		this._owner = owner;
 	}
 	get cyborgs(): number {
 		return this._cyborgs;
@@ -34,7 +40,11 @@ export default class Factory {
 	}
 
 	get fitness(): number {
-		this._fitness = ((this._produces * this._cyborgs) * 0.5) + 1;
+		this._fitness = ((this._produces * this._cyborgs) * 0.5) + 1/* - this._threat*/;
 		return this._fitness;
+	}
+
+	set threat(threat: number) {
+		this._threat = threat;
 	}
 }

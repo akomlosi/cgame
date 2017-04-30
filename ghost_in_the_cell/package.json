@@ -15,5 +15,8 @@
     "ts-loader": "^2.0.2",
     "typescript": "^2.2.1",
     "webpack": "^2.2.1"
+  },
+  "dependencies": {
+    "dijkstrajs": "^1.0.1"
   }
 }

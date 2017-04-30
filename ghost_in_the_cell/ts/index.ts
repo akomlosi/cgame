@@ -1,14 +1,16 @@
+import Game from "./Game";
+import Map from "./Map";
 declare function readline():any;
 declare function print(command:any):any;
 declare function printErr(command:any):any;
 
+import Dijkstra from './Dijkstra';
 
-import Population from './Population';
+
 import Factory from './Factory';
 import Troop from './Troop';
-import State from './State';
-import Simulator from './Simulator';
 
+let graph:Dijkstra = new Dijkstra();
 let routes = {};
 var factoryCount = parseInt(readline()); // the number of factories
 var linkCount = parseInt(readline()); // the number of links between factories
@@ -25,13 +27,26 @@ for (var i = 0; i < linkCount; i++) {
 	}
 	routes[factory1][factory2] = distance;
 	routes[factory2][factory1] = distance;
+	graph.addVertex(factory1.toString(), routes[factory1]);
+	graph.addVertex(factory2.toString(), routes[factory2]);
 }
 
+let map = new Map(routes);
+let game = new Game(graph, map);
+
+printErr(JSON.stringify(routes));
+
+let round = 0;
 
 while (true) {
-	let factories = [];
-	let troops = [];
-	let cyborgs = 0;
+	let allFactories = {};
+	let myFactories = [];
+	let enemyFactories = [];
+	let neutralFactories = [];
+
+	let myTroops = [];
+	let enemyTroops = [];
+
 	var entityCount = parseInt(readline()); // the number of entities (e.g. factories and troops)
 
 	for (var i = 0; i < entityCount; i++) {
@@ -44,35 +59,30 @@ while (true) {
 		var arg4 = parseInt(inputs[5]);
 		var arg5 = parseInt(inputs[6]);
 		if (entityType == 'FACTORY') {
+			let f = new Factory(entityId, arg1, arg2, arg3);
+			allFactories[entityId] = f;
 			if (arg1 == 1) {
-				cyborgs += arg2;
+				myFactories.push(f);
 			}
-			factories.push(new Factory(entityId, arg1, arg2, arg3));
+			else if (arg1 == -1) {
+				enemyFactories.push(f);
+			}
+			else {
+				neutralFactories.push(f);
+			}
 		}
 		else if (entityType == 'TROOP') {
+			let t = new Troop(arg1, allFactories[arg2], allFactories[arg3], arg4, arg5);
 			if (arg1 == 1) {
-				cyborgs += arg4;
+				myTroops.push(t);
 			}
-			factories.filter((factory)=> {
-				return factory.id == arg2;
-			});
-			troops.push(
-				new Troop(
-					arg1,
-					factories.filter((factory)=> {
-						if (factory.id == arg2) return factory;
-					})[0],
-					factories.filter((factory)=> {
-						if (factory.id == arg3) return factory;
-					})[0], arg4, arg5));
+			else {
+				enemyTroops.push(t);
+			}
 		}
 	}
 
-	let state = new State(troops, factories, cyborgs);
-	let population = new Population(state, routes, 10);
-	for (let i = 0; i < 10; i++) {
-		population.evolve();
-	}
+	game.update(round++, allFactories, myFactories, enemyFactories, myTroops, enemyTroops);
 
-	print(population.population[0].command);
+	print(game.command);
 }
