@@ -5,7 +5,7 @@ export default class Map {
 	private _orderedList;
 
 	constructor(routes:{}) {
-		this._routes = routes;
+		this._routes = Object.assign({}, routes);
 		this._orderedList = {};
 		this._setDistanceOrder();
 	}
@@ -33,7 +33,6 @@ export default class Map {
 			});
 			this._orderedList[k] = this.flatten(this._orderedList[k]);
 		}
-		printErr(JSON.stringify(this._orderedList));
 
 	}
 

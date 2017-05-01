@@ -9,6 +9,8 @@ import Dijkstra from './Dijkstra';
 
 import Factory from './Factory';
 import Troop from './Troop';
+import Calculator from "./Calculator";
+import Bomb from "./Bomb";
 
 let graph:Dijkstra = new Dijkstra();
 let routes = {};
@@ -32,9 +34,10 @@ for (var i = 0; i < linkCount; i++) {
 }
 
 let map = new Map(routes);
-let game = new Game(graph, map);
+let calc = new Calculator(routes);
+let game = new Game(routes, graph, map, calc);
 
-printErr(JSON.stringify(routes));
+//printErr(JSON.stringify(routes));
 
 let round = 0;
 
@@ -46,6 +49,9 @@ while (true) {
 
 	let myTroops = [];
 	let enemyTroops = [];
+
+	let myBombs = [];
+	let enemyBombs = [];
 
 	var entityCount = parseInt(readline()); // the number of entities (e.g. factories and troops)
 
@@ -80,9 +86,19 @@ while (true) {
 				enemyTroops.push(t);
 			}
 		}
+		else if (entityType == 'BOMB') {
+			if (arg1 == 1) {
+				let b = new Bomb(arg1, allFactories[arg2], allFactories[arg3], arg4);
+				myBombs.push(b);
+			}
+			else {
+				let b = new Bomb(arg1, allFactories[arg2], arg3, arg4);
+				enemyBombs.push(b);
+			}
+		}
 	}
 
-	game.update(round++, allFactories, myFactories, enemyFactories, myTroops, enemyTroops);
+	game.update(round++, allFactories, myFactories, enemyFactories, myTroops, enemyTroops, myBombs, enemyBombs);
 
 	print(game.command);
 }
